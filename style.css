@@ -1,0 +1,48 @@
+body {
+  padding-left: 16px;
+}
+
+label,
+input[type="text"],
+select,
+#calcBtn {
+  display: block;
+  margin-bottom: 10px;
+}
+
+#calcBtn {
+  margin-top: 16px;
+}
+
+input,
+select,
+textarea {
+  border-radius: 8px;
+  outline: none;
+  border: 1px solid #ced4da;
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+  border-color: #3b82f6; 
+}
+
+button,
+input[type="submit"],
+input[type="button"] {
+  background-color: #3b82f6;
+  color: #ffffff;
+  border: 1px solid #3b82f6;
+  padding: 6px 14px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+button:hover,
+input[type="submit"]:hover,
+input[type="button"]:hover {
+  background-color: #2563eb;
+  border-color: #2563eb;
+}
+
