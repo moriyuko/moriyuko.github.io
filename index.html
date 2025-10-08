@@ -3,25 +3,34 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>lab 5</title>
+    <title>lab 6</title>
     <script src="script.js" defer></script>
     <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-    <h1>Калькулятор стоимости заказа</h1>
+    <h2>Организация детского дня рождения. Калькулятор услуги</h2>
+    
+    <div id="prodPrice">Выберите тип услуги</div>
 
-    <label for="quantity">Количество:</label>
+    <label for="quantity">Количество гостей:</label>
     <input type="text" id="quantity">
 
-    <label for="product">Товар:</label>
-    <select id="product">
-        <option value="100">Товар A (100 руб.)</option>
-        <option value="250">Товар B (250 руб.)</option>
-        <option value="400">Товар C (400 руб.)</option>
+    <div id="radios">
+      <label><input type="radio" name="prodOptions" value="option1"> Домашняя вечеринка</label>
+      <label><input type="radio" name="prodOptions" value="option2"> Праздник в кафе</label>
+      <label><input type="radio" name="prodOptions" value="option3"> Выезд в аквапарк</label>
+    </div>
+
+    <select name="prodType">
+      <option value="1">Пакет "Минимум"</option>
+      <option value="2">Пакет "Стандарт"</option>
+      <option value="3">Пакет "Все включено"</option>
     </select>
 
-    <button id="calcBtn">Посчитать</button>
-
-    <p id="result"></p>
+    <div id="checkboxes">
+      <label><input type="checkbox" name="prop1"> С пиццей</label>
+      <label><input type="checkbox" name="prop2"> С тортом</label>
+      <label><input type="checkbox" name="prop3"> С батутами</label>
+    </div>
 </body>
 </html>
