@@ -1,36 +1,37 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>lab 6</title>
-    <script src="script.js" defer></script>
-    <link rel="stylesheet" href="style.css" />
+  <meta charset="UTF-8">
+  <title>lab 7</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.css"/>
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.min.js"></script>
 </head>
 <body>
-    <h2>Организация детского дня рождения. Калькулятор услуги</h2>
-    
-    <div id="prodPrice">Выберите тип услуги</div>
 
-    <label for="quantity">Количество гостей:</label>
-    <input type="text" id="quantity">
+  <div class="gallery-wrapper">
+    <button class="arrow prev">&#10094;</button>
 
-    <div id="radios">
-      <label><input type="radio" name="prodOptions" value="option1"> Домашняя вечеринка</label>
-      <label><input type="radio" name="prodOptions" value="option2"> Праздник в кафе</label>
-      <label><input type="radio" name="prodOptions" value="option3"> Выезд в аквапарк</label>
+    <div class="gallery">
+      <div><img src="https://picsum.photos/id/1015/400/250" alt="Фото 1"></div>
+      <div><img src="https://picsum.photos/id/1016/400/250" alt="Фото 2"></div>
+      <div><img src="https://picsum.photos/id/1018/400/250" alt="Фото 3"></div>
+      <div><img src="https://picsum.photos/id/1020/400/250" alt="Фото 4"></div>
+      <div><img src="https://picsum.photos/id/1024/400/250" alt="Фото 5"></div>
+      <div><img src="https://picsum.photos/id/1025/400/250" alt="Фото 6"></div>
+      <div><img src="https://picsum.photos/id/1033/400/250" alt="Фото 7"></div>
+      <div><img src="https://picsum.photos/id/1035/400/250" alt="Фото 8"></div>
+      <div><img src="https://picsum.photos/id/1036/400/250" alt="Фото 8"></div>
     </div>
 
-    <select name="prodType">
-      <option value="1">Пакет "Минимум"</option>
-      <option value="2">Пакет "Стандарт"</option>
-      <option value="3">Пакет "Все включено"</option>
-    </select>
+    <button class="arrow next">&#10095;</button>
+  </div>
 
-    <div id="checkboxes">
-      <label><input type="checkbox" name="prop1"> С пиццей</label>
-      <label><input type="checkbox" name="prop2"> С тортом</label>
-      <label><input type="checkbox" name="prop3"> С батутами</label>
-    </div>
+  <div class="pager">
+    <span id="current-page">1</span> / <span id="total-pages">3</span>
+  </div>
+
+  <script src="script.js"></script>
 </body>
 </html>

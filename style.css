@@ -1,17 +1,54 @@
 body {
-  padding-left: 16px;
+  font-family: sans-serif;
+  background: #f5f5f5;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 40px;
 }
 
-input,
-select,
-textarea {
-  border-radius: 8px;
-  outline: none;
-  border: 1px solid #ced4da;
+.gallery-wrapper {
+  position: relative;
+  width: 80%;
+  max-width: 900px;
 }
 
-input:focus,
-select:focus,
-textarea:focus {
-  border-color: #3b82f6; 
+.gallery img {
+  width: 100%;
+  border-radius: 12px;
+}
+
+.arrow {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: rgba(0,0,0,0.5);
+  border: none;
+  color: white;
+  font-size: 30px;
+  width: 40px;
+  height: 60px;
+  cursor: pointer;
+  z-index: 10;
+  border-radius: 10px;
+}
+
+.prev { left: -50px; }
+.next { right: -50px; }
+
+.pager {
+  margin-top: 15px;
+  font-size: 18px;
+  color: #333;
+  text-align: center;
+}
+
+/* Для телефонов */
+@media (max-width: 600px) {
+  .gallery-wrapper {
+    width: 95%;
+  }
+  .arrow {
+    display: none;
+  }
 }
