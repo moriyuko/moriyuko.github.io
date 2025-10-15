@@ -7,6 +7,12 @@
   <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.css"/>
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.min.js"></script>
+  <script>
+    const link = document.createElement('link');
+    link.rel = 'stylesheet';
+    link.href = 'style.css?v=' + Date.now(); // уникальное число при каждой загрузке
+    document.head.appendChild(link);
+  </script>
 </head>
 <body>
 
