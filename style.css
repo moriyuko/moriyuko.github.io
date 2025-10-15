@@ -44,7 +44,7 @@ body {
 }
 
 /* Для телефонов */
-@media (max-width: 600px) {
+@media (max-width: 768px) {
   .gallery-wrapper {
     width: 95%;
   }
