@@ -1,346 +1,207 @@
-// Константы
-const FORM_STORAGE_KEY = 'feedbackFormData';
-// Для использования: зарегистрируйтесь на https://formcarry.com и замените YOUR_FORM_ID на ваш ID формы
-// Или используйте https://slapform.com - там не требуется регистрация
-const FORM_ENDPOINT = 'https://formcarry.com/s/uRmwFwjLNhL';
+// Mobile Menu Toggle
+const burgerMenu = document.getElementById('burgerMenu');
+const nav = document.getElementById('nav');
+const dropdowns = document.querySelectorAll('.dropdown');
 
-// Элементы DOM
-const openFormBtn = document.getElementById('openFormBtn');
-const formPopup = document.getElementById('formPopup');
-const closeFormBtn = document.getElementById('closeFormBtn');
-const cancelBtn = document.getElementById('cancelBtn');
-const feedbackForm = document.getElementById('feedbackForm');
-const messageContainer = document.getElementById('messageContainer');
-
-// Флаг для отслеживания, был ли добавлен новый state в историю
-let formStatePushed = false;
-
-// Инициализация
-document.addEventListener('DOMContentLoaded', () => {
-  // Восстановление данных из LocalStorage
-  restoreFormData();
-  
-  // Проверка URL при загрузке страницы
-  if (window.location.hash === '#form') {
-    formStatePushed = false; // Форма открыта через URL, не через pushState
-    openForm();
-  }
-  
-  // Обработка кнопки "Назад" в браузере
-  window.addEventListener('popstate', (e) => {
-    if (window.location.hash !== '#form' && formPopup.classList.contains('active')) {
-      formPopup.classList.remove('active');
-      document.body.style.overflow = '';
-      clearMessage();
-    }
-    formStatePushed = false;
-  });
+burgerMenu.addEventListener('click', () => {
+    nav.classList.toggle('active');
+    burgerMenu.classList.toggle('active');
 });
 
-// Открытие формы
-function openForm() {
-  formPopup.classList.add('active');
-  document.body.style.overflow = 'hidden';
-  
-  // Изменение URL с помощью History API
-  if (window.location.hash !== '#form') {
-    history.pushState({ form: true }, '', '#form');
-    formStatePushed = true;
-  } else {
-    formStatePushed = false;
-  }
-  
-  // Восстановление данных из LocalStorage
-  restoreFormData();
-}
-
-// Закрытие формы
-function closeForm() {
-  formPopup.classList.remove('active');
-  document.body.style.overflow = '';
-  
-  // Возврат URL обратно только если мы добавили новый state
-  if (window.location.hash === '#form' && formStatePushed) {
-    history.back();
-  } else if (window.location.hash === '#form') {
-    // Если форма была открыта через URL, просто убираем hash
-    history.replaceState(null, '', window.location.pathname);
-  }
-  
-  formStatePushed = false;
-  
-  // Очистка сообщений
-  clearMessage();
-}
-
-// Сохранение данных формы в LocalStorage
-function saveFormData() {
-  const formData = {
-    fullName: document.getElementById('fullName').value,
-    email: document.getElementById('email').value,
-    phone: document.getElementById('phone').value,
-    organization: document.getElementById('organization').value,
-    message: document.getElementById('message').value,
-    consent: document.getElementById('consent').checked
-  };
-  
-  localStorage.setItem(FORM_STORAGE_KEY, JSON.stringify(formData));
-}
-
-// Восстановление данных формы из LocalStorage
-function restoreFormData() {
-  const savedData = localStorage.getItem(FORM_STORAGE_KEY);
-  
-  if (savedData) {
-    try {
-      const formData = JSON.parse(savedData);
-      
-      document.getElementById('fullName').value = formData.fullName || '';
-      document.getElementById('email').value = formData.email || '';
-      document.getElementById('phone').value = formData.phone || '';
-      document.getElementById('organization').value = formData.organization || '';
-      document.getElementById('message').value = formData.message || '';
-      document.getElementById('consent').checked = formData.consent || false;
-    } catch (e) {
-      console.error('Ошибка при восстановлении данных:', e);
-    }
-  }
-}
-
-// Очистка данных формы из LocalStorage
-function clearFormData() {
-  localStorage.removeItem(FORM_STORAGE_KEY);
-  
-  // Очистка полей формы
-  feedbackForm.reset();
-}
-
-// Сохранение данных при вводе
-feedbackForm.addEventListener('input', (e) => {
-  saveFormData();
-  // Очистка ошибки при вводе
-  if (e.target.classList.contains('error')) {
-    e.target.classList.remove('error');
-    const errorMsg = e.target.closest('.form-group')?.querySelector('.error-message');
-    if (errorMsg) errorMsg.remove();
-  }
-});
-feedbackForm.addEventListener('change', (e) => {
-  saveFormData();
-  // Очистка ошибки при изменении (для чекбокса)
-  const formGroup = e.target.closest('.form-group');
-  if (formGroup && formGroup.classList.contains('error')) {
-    formGroup.classList.remove('error');
-    const errorMsg = formGroup.querySelector('.error-message');
-    if (errorMsg) errorMsg.remove();
-  }
-});
-
-// Отображение сообщения
-function showMessage(text, type = 'success') {
-  messageContainer.innerHTML = `<div class="message ${type}">${text}</div>`;
-  
-  // Автоматическое скрытие сообщения через 5 секунд
-  setTimeout(() => {
-    clearMessage();
-  }, 5000);
-}
-
-// Очистка сообщения
-function clearMessage() {
-  messageContainer.innerHTML = '';
-}
-
-// Валидация формы
-function validateForm() {
-  let isValid = true;
-  
-  // Очистка предыдущих ошибок
-  clearFieldErrors();
-  
-  // Валидация ФИО
-  const fullName = document.getElementById('fullName').value.trim();
-  if (!fullName) {
-    showFieldError('fullName', 'Поле ФИО обязательно для заполнения');
-    isValid = false;
-  } else if (fullName.split(/\s+/).length < 2) {
-    showFieldError('fullName', 'Введите полное имя (минимум 2 слова)');
-    isValid = false;
-  }
-  
-  // Валидация Email
-  const email = document.getElementById('email').value.trim();
-  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  if (!email) {
-    showFieldError('email', 'Поле Email обязательно для заполнения');
-    isValid = false;
-  } else if (!emailRegex.test(email)) {
-    showFieldError('email', 'Введите корректный email адрес');
-    isValid = false;
-  }
-  
-  // Валидация телефона
-  const phone = document.getElementById('phone').value.trim();
-  const phoneRegex = /^[\d\s\-\+\(\)]+$/;
-  if (!phone) {
-    showFieldError('phone', 'Поле Телефон обязательно для заполнения');
-    isValid = false;
-  } else if (!phoneRegex.test(phone) || phone.replace(/\D/g, '').length < 10) {
-    showFieldError('phone', 'Введите корректный номер телефона');
-    isValid = false;
-  }
-  
-  // Валидация сообщения
-  const message = document.getElementById('message').value.trim();
-  if (!message) {
-    showFieldError('message', 'Поле Сообщение обязательно для заполнения');
-    isValid = false;
-  } else if (message.length < 10) {
-    showFieldError('message', 'Сообщение должно содержать минимум 10 символов');
-    isValid = false;
-  }
-  
-  // Валидация согласия
-  const consent = document.getElementById('consent').checked;
-  if (!consent) {
-    showFieldError('consent', 'Необходимо согласие с политикой обработки данных');
-    isValid = false;
-  }
-  
-  return isValid;
-}
-
-// Отображение ошибки поля
-function showFieldError(fieldId, message) {
-  const field = document.getElementById(fieldId);
-  const formGroup = field.closest('.form-group');
-  
-  // Добавляем класс ошибки
-  if (field.type === 'checkbox') {
-    formGroup.classList.add('error');
-  } else {
-    field.classList.add('error');
-  }
-  
-  // Создаем или обновляем сообщение об ошибке
-  let errorElement = formGroup.querySelector('.error-message');
-  if (!errorElement) {
-    errorElement = document.createElement('div');
-    errorElement.className = 'error-message';
-    formGroup.appendChild(errorElement);
-  }
-  errorElement.textContent = message;
-}
-
-// Очистка ошибок полей
-function clearFieldErrors() {
-  const errorFields = feedbackForm.querySelectorAll('.error');
-  errorFields.forEach(field => field.classList.remove('error'));
-  
-  const errorGroups = feedbackForm.querySelectorAll('.form-group.error');
-  errorGroups.forEach(group => group.classList.remove('error'));
-  
-  const errorMessages = feedbackForm.querySelectorAll('.error-message');
-  errorMessages.forEach(msg => msg.remove());
-}
-
-// Обработка отправки формы
-feedbackForm.addEventListener('submit', async (e) => {
-  e.preventDefault();
-  
-  // Валидация формы
-  if (!validateForm()) {
-    showMessage('Пожалуйста, исправьте ошибки в форме', 'error');
-    return;
-  }
-  
-  const submitBtn = feedbackForm.querySelector('.submit-btn');
-  submitBtn.disabled = true;
-  submitBtn.textContent = 'Отправка...';
-  
-  clearMessage();
-  clearFieldErrors();
-  
-  // Сбор данных формы
-  const formData = new FormData(feedbackForm);
-  
-  try {
-    // Отправка данных на сервер (FormData для совместимости с formcarry.com)
-    const response = await fetch(FORM_ENDPOINT, {
-      method: 'POST',
-      headers: {
-        'Accept': 'application/json'
-      },
-      body: formData
+// Mobile Dropdown Toggle
+dropdowns.forEach(dropdown => {
+    const link = dropdown.querySelector('.nav-link');
+    link.addEventListener('click', (e) => {
+        if (window.innerWidth <= 768) {
+            e.preventDefault();
+            dropdown.classList.toggle('active');
+        }
     });
-    
-    // Получаем текст ответа для проверки
-    const responseText = await response.text();
-    let responseData = null;
-    
-    // Пытаемся распарсить как JSON
-    try {
-      responseData = JSON.parse(responseText);
-    } catch (e) {
-      // Если не JSON, это нормально для некоторых сервисов
+});
+
+// Close menu when clicking outside
+document.addEventListener('click', (e) => {
+    if (window.innerWidth <= 768) {
+        if (!nav.contains(e.target) && !burgerMenu.contains(e.target)) {
+            nav.classList.remove('active');
+            dropdowns.forEach(drop => drop.classList.remove('active'));
+        }
     }
-    
-    // Проверка успешности ответа
-    // formcarry.com возвращает статус 200 и { code: 200 } при успехе
-    // или { code: 4xx/5xx } при ошибке
-    if (response.ok) {
-      // Проверяем, есть ли ошибка в теле ответа
-      if (responseData && responseData.code && responseData.code !== 200) {
-        // Ошибка в ответе
-        throw new Error(responseData.message || 'Ошибка при отправке формы');
-      }
-      
-      // Успешная отправка
-      showMessage('Спасибо! Ваше сообщение успешно отправлено.', 'success');
-      
-      // Очистка данных формы
-      clearFormData();
-      
-      // Закрытие формы через 2 секунды
-      setTimeout(() => {
-        closeForm();
-      }, 2000);
+});
+
+// Smooth Scroll
+document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+    anchor.addEventListener('click', function (e) {
+        const href = this.getAttribute('href');
+        if (href !== '#') {
+            e.preventDefault();
+            const target = document.querySelector(href);
+            if (target) {
+                const headerHeight = document.querySelector('.header').offsetHeight;
+                const targetPosition = target.offsetTop - headerHeight;
+                window.scrollTo({
+                    top: targetPosition,
+                    behavior: 'smooth'
+                });
+                // Close mobile menu after click
+                if (window.innerWidth <= 768) {
+                    nav.classList.remove('active');
+                    dropdowns.forEach(drop => drop.classList.remove('active'));
+                }
+            }
+        }
+    });
+});
+
+// Tariff Cards - Show button on click for mobile
+const tariffCards = document.querySelectorAll('.tariff-card');
+tariffCards.forEach(card => {
+    card.addEventListener('click', (e) => {
+        if (window.innerWidth <= 768 && !e.target.classList.contains('tariff-btn')) {
+            // Remove active class from all cards
+            tariffCards.forEach(c => c.classList.remove('active'));
+            // Add active class to clicked card
+            card.classList.add('active');
+        }
+    });
+});
+
+// Tariff Button Click - Scroll to Contacts
+const tariffButtons = document.querySelectorAll('.tariff-btn');
+tariffButtons.forEach(btn => {
+    btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const contactsSection = document.getElementById('contacts');
+        const headerHeight = document.querySelector('.header').offsetHeight;
+        const targetPosition = contactsSection.offsetTop - headerHeight;
+        window.scrollTo({
+            top: targetPosition,
+            behavior: 'smooth'
+        });
+        // Pre-fill comment with tariff name
+        const commentField = document.getElementById('comment');
+        const tariffName = btn.getAttribute('data-tariff');
+        commentField.value = `Интересуюсь тарифом: ${tariffName}`;
+        commentField.focus();
+    });
+});
+
+// Reviews Carousel
+let currentReview = 0;
+const reviewCards = document.querySelectorAll('.review-card');
+const prevBtn = document.getElementById('prevBtn');
+const nextBtn = document.getElementById('nextBtn');
+
+function showReview(index) {
+    reviewCards.forEach(card => card.classList.remove('active'));
+    if (index < 0) {
+        currentReview = reviewCards.length - 1;
+    } else if (index >= reviewCards.length) {
+        currentReview = 0;
     } else {
-      // HTTP ошибка
-      let errorMessage = 'Ошибка при отправке формы';
-      if (responseData && responseData.message) {
-        errorMessage = responseData.message;
-      } else {
-        errorMessage = `Ошибка ${response.status}: ${response.statusText}`;
-      }
-      throw new Error(errorMessage);
+        currentReview = index;
     }
-  } catch (error) {
-    // Ошибка сети или другая ошибка
-    console.error('Ошибка:', error);
-    const errorText = error.message || 'Произошла ошибка при отправке формы. Пожалуйста, попробуйте еще раз.';
-    showMessage(errorText, 'error');
-  } finally {
-    submitBtn.disabled = false;
-    submitBtn.textContent = 'Отправить';
-  }
+    reviewCards[currentReview].classList.add('active');
+}
+
+prevBtn.addEventListener('click', () => {
+    showReview(currentReview - 1);
 });
 
-// Обработчики событий
-openFormBtn.addEventListener('click', openForm);
-closeFormBtn.addEventListener('click', closeForm);
-cancelBtn.addEventListener('click', closeForm);
-
-// Закрытие по клику вне формы
-formPopup.addEventListener('click', (e) => {
-  if (e.target === formPopup) {
-    closeForm();
-  }
+nextBtn.addEventListener('click', () => {
+    showReview(currentReview + 1);
 });
 
-// Закрытие по клавише Escape
-document.addEventListener('keydown', (e) => {
-  if (e.key === 'Escape' && formPopup.classList.contains('active')) {
-    closeForm();
-  }
+// Auto-play carousel (optional)
+let carouselInterval;
+function startCarousel() {
+    carouselInterval = setInterval(() => {
+        showReview(currentReview + 1);
+    }, 5000);
+}
+
+function stopCarousel() {
+    clearInterval(carouselInterval);
+}
+
+// Start carousel
+startCarousel();
+
+// Pause on hover
+const reviewsCarousel = document.querySelector('.reviews-carousel');
+reviewsCarousel.addEventListener('mouseenter', stopCarousel);
+reviewsCarousel.addEventListener('mouseleave', startCarousel);
+
+// Form Submission
+const contactForm = document.getElementById('contactForm');
+const formMessage = document.getElementById('formMessage');
+
+contactForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    
+    const formData = new FormData(contactForm);
+    const data = {
+        name: formData.get('name'),
+        phone: formData.get('phone'),
+        email: formData.get('email'),
+        comment: formData.get('comment')
+    };
+
+    // Formcarry endpoint
+    const formcarryEndpoint = 'https://formcarry.com/s/6hAKdl6NLxD';
+    
+    // Show loading state
+    const submitBtn = contactForm.querySelector('.submit-btn');
+    const originalText = submitBtn.textContent;
+    submitBtn.textContent = 'Отправка...';
+    submitBtn.disabled = true;
+    formMessage.style.display = 'none';
+
+    try {
+        const response = await fetch(formcarryEndpoint, {
+            method: 'POST',
+            headers: {
+                'Accept': 'application/json',
+            },
+            body: formData
+        });
+
+        const result = await response.json();
+
+        if (result.status === 200) {
+            formMessage.textContent = 'Спасибо! Ваша заявка успешно отправлена. Мы свяжемся с вами в ближайшее время.';
+            formMessage.className = 'form-message success';
+            contactForm.reset();
+        } else {
+            throw new Error(result.message || 'Ошибка отправки формы');
+        }
+    } catch (error) {
+        console.error('Form submission error:', error);
+        formMessage.textContent = 'Произошла ошибка при отправке формы. Пожалуйста, попробуйте еще раз или свяжитесь с нами по телефону.';
+        formMessage.className = 'form-message error';
+    } finally {
+        submitBtn.textContent = originalText;
+        submitBtn.disabled = false;
+    }
 });
+
+// Dropdown menu hover effect for desktop
+if (window.innerWidth > 768) {
+    dropdowns.forEach(dropdown => {
+        dropdown.addEventListener('mouseenter', () => {
+            dropdown.classList.add('active');
+        });
+        dropdown.addEventListener('mouseleave', () => {
+            dropdown.classList.remove('active');
+        });
+    });
+}
+
+// Handle window resize
+window.addEventListener('resize', () => {
+    if (window.innerWidth > 768) {
+        nav.classList.remove('active');
+        dropdowns.forEach(drop => drop.classList.remove('active'));
+    }
+});
+
